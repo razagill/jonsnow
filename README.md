@@ -1,3 +1,7 @@
+CREDITS:
+========
+This theme is based off from the excellent work by https://github.com/karloespiritu/Bastard. Please check that out for a more badass look!
+
 Bastard Theme for Ghost
 ==================
 
