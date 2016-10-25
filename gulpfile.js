@@ -15,6 +15,8 @@ var concat = require('gulp-concat');
 var cache = require('gulp-cache');
 var runsequence = require('run-sequence');
 var del = require('del');
+var ghost = require('ghost');
+var path = require('path');
 
 var pkg = require('./package.json');
 var banner = [
@@ -149,6 +151,18 @@ gulp.task('clean', function() {
         console.log("Deleting "+ x);
       });
     return del(files.clean);
+});
+// Starting a ghost instance
+gulp.task('ghost:start', function (callback) {
+    g = ghost({
+        config: path.join(__dirname, './ghost-dev-config.js')
+    });
+
+    g.then(function (ghostServer) {
+        ghostServer.start();
+    });
+
+    callback();
 });
 
 // Default Task
