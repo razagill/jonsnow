@@ -17,6 +17,8 @@ var runsequence = require('run-sequence');
 var del = require('del');
 var ghost = require('ghost');
 var path = require('path');
+var replace = require('gulp-replace');
+var symlink = require('gulp-sym');
 
 var pkg = require('./package.json');
 var banner = [
@@ -59,6 +61,8 @@ var files = {
             'assets/js/concat_scripts.js'
            ]
 };
+
+
 
 // Lint Task
 gulp.task('lint', function() {
@@ -152,7 +156,8 @@ gulp.task('clean', function() {
       });
     return del(files.clean);
 });
-// Starting a ghost instance
+
+// Ghost dev tasks
 gulp.task('ghost:start', function (callback) {
     g = ghost({
         config: path.join(__dirname, './ghost-dev-config.js')
@@ -163,6 +168,19 @@ gulp.task('ghost:start', function (callback) {
     });
 
     callback();
+});
+
+gulp.task('symlink', function () {
+  return gulp
+    .src('./')
+    .pipe(symlink('node_modules/ghost/content/themes/jonsnow', { force: true }));
+});
+
+gulp.task('init', ['symlink'],  function () {
+  return gulp
+    .src('node_modules/ghost/core/server/data/schema/default-settings.json', {base : './'})
+    .pipe(replace(/casper/g, 'jonsnow'))
+    .pipe(gulp.dest('./'));
 });
 
 // Default Task
