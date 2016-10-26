@@ -1,5 +1,6 @@
 // Include gulp
 var gulp = require('gulp');
+var browserSync = require('browser-sync').create();
 
 // Plugins
 var sass = require('gulp-sass');
@@ -158,13 +159,19 @@ gulp.task('clean', function() {
 });
 
 // Ghost dev tasks
+gulp.task('ghost', ['ghost:start'], function (callback) {
+  gulp.watch('./*.hbs', ['browsersync:reload']);
+  callback();
+});
 gulp.task('ghost:start', function (callback) {
     g = ghost({
         config: path.join(__dirname, './ghost-dev-config.js')
     });
 
     g.then(function (ghostServer) {
-        ghostServer.start();
+      ghostServer.start().then(function () {
+        runsequence('browsersync'); 
+      });
     });
 
     callback();
@@ -181,6 +188,20 @@ gulp.task('init', ['symlink'],  function () {
     .src('node_modules/ghost/core/server/data/schema/default-settings.json', {base : './'})
     .pipe(replace(/casper/g, 'jonsnow'))
     .pipe(gulp.dest('./'));
+});
+
+gulp.task('browsersync', function (callback) {
+  browserSync.init({
+    proxy: 'localhost:2368'
+  });
+
+  callback();
+});
+
+gulp.task('browsersync:reload', function (callback) {
+  browserSync.reload();
+
+  callback();
 });
 
 // Default Task
